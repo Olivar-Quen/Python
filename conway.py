@@ -1,5 +1,13 @@
+import random 
+
 rows = ""
 cols = ""
 
-rows = input("Nombre de lignes")
-cols = input("Nombre de colonnes")
+rows = int(input("Nombre de lignes : "))
+cols = int(input("Nombre de colonnes: "))
+
+
+grid = [[random.choice([0 , 1]) for _ in range(cols)] for _ in range(rows)]
+
+for row in grid :
+    print(row)
