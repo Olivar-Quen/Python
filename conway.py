@@ -2,106 +2,112 @@ import random
 import os
 import time
 
+rows = ""
+cols = ""
+
 
 #Définition des 3 règles 
 
 def calcul() :
-    temp = [row[:] for row in state]
-    for x in range(largeur):
-	    for y in range(hauteur):
-		    nb_voisins = calcul_voisins(x, y)
+    temp = [row [:] for row in state] 
+    for x in range(rows) :
+        for y in range (cols) :
+            nombre_voisins = calcul_voisins(x,y)   
+        
+        # Règle 1 : Si une cellule a exactement 3 voisines vivantes alors elle devient vivante 
+        if state [x][y] == 0 and nombre_voisins == 3 :
+            temp [x][y] = 1 
 
-            # Règle 1 : cellule vivante et a moins de 2 voisins en vie, elle meurt
-            if state[y][x] == 1 and nb_voisins < 2:
-                temp[y][x] = 0
+        # Règle 2 : Si une cellule a exactement 2 voisines vivantes, elle reste dans son état actuel à l'étape suivante 
+        if state [x][y] == 1 and nombre_voisins == 2 : 
+            temp [x][y] = 1
+        
+        # Règle 3 : Si une cellule a strictement moins de deux ou strictement plus de trois voisins vivante, elle meurt 
+        if state [x][y] == 1 and nombre_voisins < 2 or nombre_voisins > 2 : 
+            temp [x][y] = 0 
 
-            # Règle 2 : Toute cellule avec 2 ou 3 voisins vivant survit
-            elif state[y][x] == 1 and (nb_voisins == 2 or nb_voisins == 3):
-                temp[y][x] = 1
+        #Règle 4 : Si une cellule a plus de 3 voisins vivants, alors elle meurt  
 
-            # Règle 3 : Plus de 3 voisins, alors meurt
-            elif state[y][x] == 1 and nb_voisins > 3:
-                temp[y][x] = 0
+        if state [x][y] == 1 and nombre_voisins > 3 : 
+            temp [x][y] = 0
 
-            # Règle 4 : Si une cellule morte a exactement 3 voisins vivants, elle naît
-            elif state[y][x] == 0 and nb_voisins == 3:
-                temp[y][x] = 1
+   
+    return temp # Prend la valeur de la variable temporaire 
 
-    return temp  # Retourne la nouvelle grille
-    
+
 def calcul_voisins(x,y) : 
-        nb_voisins = 0 
-
-        #Diag Haut Gauche 
-        if state[(x-1)%largeur][(y+1)%hauteur] == 1 :
-            nb_voisins += 1
+    nombre_voisins = 0
 
 
-        #Haut
-        if state[x][(y+1)%hauteur] == 1 :
-            nb_voisins += 1
+    #Diagonale Haut - Gauche 
+
+    if state [(x-1)%rows][(y+1)%cols] : 
+        nombre_voisins +=1 
+
+    #Haut  
+
+    if state [x][(y+1)%cols] : 
+        nombre_voisins +=1 
+
+    #Diagonale Haut - Droite
+
+    if state [(x+1)%rows][(y+1)%cols] : 
+        nombre_voisins +=1 
 
 
-        #Diag Haut Droite 
-        if state[(x+1)%largeur][(y+1)%hauteur] == 1 :
-            nb_voisins += 1
+   #Gauche 
+
+    if state [(x-1)%rows][y] : 
+        nombre_voisins +=1 
+
+    
+    #Droite
+
+    if state [(x+1)%rows][y] : 
+        nombre_voisins +=1 
+
+    
+    #Diagonale Bas - Gauche 
+
+    if state [(x-1)%rows][(y-1)%cols] : 
+        nombre_voisins +=1 
 
 
-        #Gauche 
-        if state[(x-1)%largeur][y] == 1 :
-            nb_voisins += 1
+   #Bas
+
+    if state [x][(y-1)%cols] : 
+        nombre_voisins +=1 
 
 
-        #Droite 
-        if state[(x+1)%largeur][y] == 1 :
-            nb_voisins += 1
+    #Diagonale Bas - Droite 
+
+    if state [(x+1)%rows][(y-1)%cols] : 
+        nombre_voisins +=1 
 
 
-        #Bas Gauche 
-        if state[(x-1)%largeur][(y-1)%hauteur] == 1 :
-            nb_voisins += 1
-
-
-        #Bas 
-        if state[x][(y-1)%hauteur] == 1 :
-            nb_voisins += 1
-
-
-        #Bas Droite 
-        if state[(x+1)%largeur][(y-1)%hauteur] == 1 :
-            nb_voisins += 1
-
-
-
-        return nb_voisins  # On récupère le nombre de voisins 
-
-
+    return nombre_voisins # Récupération de la valeur de la variable 
 
 
 #-----Programme Principal----
 
 #Définition des variables 
 
-largeur = int(input("Nombre de lignes : ")) # Pour parcourir les lignes on utilise la lettre i
-hauteur = int(input("Nombre de colonnes: "))# Pour parcourir les colonnes on utilise la lettre j
-vivant = 1 
-mort = 0 
+rows = int(input("Insérez le nombre de lignes :"))
+cols = int(input("Insérez le nombre de colonnes :"))
+
 
 
 #Préparation des matrices 
 
-state = [[random.choice([0 , 1]) for row in range(hauteur)] for col in range(largeur)]
+state = [[random.choice([0 , 1]) for row in range(cols)] for col in range(rows)]
+temp = [[0 for row in range(cols)] for col in range(rows)]
 
 
+calcul()  # Mise à jour de la grille
 
+for row in state:
+        print(" ".join(map(str, row)))  # Affichage de la grille
 
-# Boucle d'évolution du jeu
-while True:
-    os.system("cls" if os.name == "nt" else "clear")  # Efface l'écran
-    for row in state:
-        print(" ".join(map(str, row)))  # Affiche la grille
-    time.sleep(0.5)  # Pause pour voir l'évolution
-    state = calcul()  # Mettre à jour la grille
 
 
 
